@@ -7,7 +7,9 @@ let particlesArray = [];
 // Variable to store available screen data
 let cachedCoordinates = {
     horse: [],
-    whale: []
+    whale: [],
+    eagle: [],
+    tiger: []
 };
 let currentShape = 'horse';
 
@@ -138,12 +140,14 @@ function scanImage(text) {
 function init() {
     particlesArray = [];
 
-    // 1. Scan and cache both shapes
+    // 1. Scan and cache all shapes
     cachedCoordinates.horse = scanImage('🐎');
-    cachedCoordinates.whale = scanImage('🐋'); // Whale emoji
+    cachedCoordinates.whale = scanImage('🐋');
+    cachedCoordinates.eagle = scanImage('🦅');
+    cachedCoordinates.tiger = scanImage('🐅');
 
-    // 2. Initialize with horse
-    applyShape('horse');
+    // 2. Initialize with current shape state or default to horse
+    applyShape(currentShape);
 }
 
 function applyShape(shapeName) {
@@ -200,22 +204,24 @@ window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     const windowHeight = window.innerHeight;
 
-    // Simple logic: if we are more than 50% down the first section, assume transition
-    // Actually, let's just split by section
-    // Section 1 is 0 to windowHeight
-    // Section 2 is windowHeight to 2*windowHeight
+    // Determine section based on scroll position
+    // Section 1 (Horse): 0 - 100vh
+    // Section 2 (Whale): 100vh - 200vh
+    // Section 3 (Eagle): 200vh - 300vh
+    // Section 4 (Tiger): 300vh - 400vh
 
-    // Trigger point: middle of viewport crossing the line?
-    const triggerPoint = windowHeight * 0.5;
+    // We base it on the center of the viewport
+    const centerLine = scrollY + windowHeight * 0.5;
+    const sectionIndex = Math.floor(centerLine / windowHeight);
 
-    if (scrollY > triggerPoint) {
-        if (currentShape !== 'whale') {
-            applyShape('whale');
-        }
-    } else {
-        if (currentShape !== 'horse') {
-            applyShape('horse');
-        }
+    let targetShape = 'horse';
+    if (sectionIndex === 0) targetShape = 'horse';
+    if (sectionIndex === 1) targetShape = 'whale';
+    if (sectionIndex === 2) targetShape = 'eagle';
+    if (sectionIndex >= 3) targetShape = 'tiger'; // Fallback to tiger for anything below
+
+    if (currentShape !== targetShape) {
+        applyShape(targetShape);
     }
 });
 
