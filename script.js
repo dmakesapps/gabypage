@@ -39,6 +39,7 @@ class Particle {
         this.size = 2;
         this.density = (Math.random() * 30) + 1;
         this.color = color || 'white';
+        this.baseColor = color || 'white';
         // Random breathing offsets
         this.angleX = Math.random() * Math.PI * 2;
         this.angleY = Math.random() * Math.PI * 2;
@@ -50,6 +51,7 @@ class Particle {
         this.baseX = x;
         this.baseY = y;
         this.color = color;
+        this.baseColor = color;
     }
 
     draw() {
@@ -76,7 +78,16 @@ class Particle {
         if (distance < mouse.radius) {
             this.x -= directionX;
             this.y -= directionY;
+
+            // Change color on hover
+            // Calculate a hue based on position for a rainbow effect
+            const hue = (this.x + this.y) % 360;
+            this.color = 'hsl(' + hue + ', 100%, 60%)';
         } else {
+            if (this.color !== this.baseColor) {
+                this.color = this.baseColor;
+            }
+
             // Breathing effect
             const time = Date.now() * 0.002;
             const floatX = Math.sin(time + this.baseY * 0.01 + this.angleX) * 2;
